@@ -46,73 +46,73 @@ Com o servidor em execução, basta acessar os endPoint a seguir para consumir a
 	</thead>
 	<tbody>
 		<tr>
-			<td>"http://127.0.0.1:8000/SistemaTreinamento/pessoa"</td>
+			<td>"http://127.0.0.1:8080/SistemaTreinamento/pessoa"</td>
 			<td>GET</td>
 			<td>Não há</td>
 			<td>Retornará uma lista de pessoas salvas, mostrando apenas seu nome e sobrenome</td>
 		</tr>
 		<tr>
-			<td>"http://127.0.0.1:8000/SistemaTreinamento/pessoa"</td>
+			<td>"http://127.0.0.1:8080/SistemaTreinamento/pessoa"</td>
 			<td>POST</td>
 			<td>{"nome":"(Texto)","sobrenome":"(Texto)"}</td>
 			<td>Salvará uma nova pessoa e retornará seus dados salvos</td>
 		</tr>
 		<tr>
-			<td>"http://127.0.0.1:8000/SistemaTreinamento/pessoa/ + (Numero Inteiro)"</td>
+			<td>"http://127.0.0.1:8080/SistemaTreinamento/pessoa/ + (Numero Inteiro)"</td>
 			<td>GET</td>
 			<td>Não há</td>
 			<td>Retornará uma pessoa salva, mostrando seu nome, sobrenome e uma lista contendo a sala e o espaço de café que estará em cada etapa salva</td>
 		</tr>
 		<tr>
-			<td>"http://127.0.0.1:8000/SistemaTreinamento/sala"</td>
+			<td>"http://127.0.0.1:8080/SistemaTreinamento/sala"</td>
 			<td>GET</td>
 			<td>Não há</td>
 			<td>Retornará uma lista de salas salvas, mostrando apenas seu nome</td>
 		</tr>
 		<tr>
-			<td>"http://127.0.0.1:8000/SistemaTreinamento/sala"</td>
+			<td>"http://127.0.0.1:8080/SistemaTreinamento/sala"</td>
 			<td>POST</td>
 			<td>{"nome":"(Texto)"}</td>
 			<td>Salvará uma nova sala e retornará seus dados salvos</td>
 		</tr>
 		<tr>
-			<td>"http://127.0.0.1:8000/SistemaTreinamento/sala/ + (Numero Inteiro)"</td>
+			<td>"http://127.0.0.1:8080/SistemaTreinamento/sala/ + (Numero Inteiro)"</td>
 			<td>GET</td>
 			<td>Não há</td>
 			<td>Retornará uma sala salva, mostrando seu nome e uma lista contendo as pessoas que estarão presentes em cada etapa salva</td>
 		</tr>
 		<tr>
-			<td>"http://127.0.0.1:8000/SistemaTreinamento/etapa"</td>
+			<td>"http://127.0.0.1:8080/SistemaTreinamento/etapa"</td>
 			<td>GET</td>
 			<td>Não há</td>
 			<td>Retornará uma lista de etapas salvas, mostrando apenas seu nome</td>
 		</tr>
 		<tr>
-			<td>"http://127.0.0.1:8000/SistemaTreinamento/etapa"</td>
+			<td>"http://127.0.0.1:8080/SistemaTreinamento/etapa"</td>
 			<td>POST</td>
 			<td>{"nome":"(Texto)"}</td>
 			<td>Salvará uma nova etapa e retornará seus dados salvos</td>
 		</tr>
 		<tr>
-			<td>"http://127.0.0.1:8000/SistemaTreinamento/etapa/ + (Numero Inteiro)"</td>
+			<td>"http://127.0.0.1:8080/SistemaTreinamento/etapa/ + (Numero Inteiro)"</td>
 			<td>GET</td>
 			<td>Não há</td>
 			<td>Retornará uma etapa salva, mostrando seu nome</td>
 		</tr>
 		<tr>
-			<td>"http://127.0.0.1:8000/SistemaTreinamento/espaco"</td>
+			<td>"http://127.0.0.1:8080/SistemaTreinamento/espaco"</td>
 			<td>GET</td>
 			<td>Não há</td>
 			<td>Retornará uma lista de espaços de café salvos, mostrando apenas seu nome</td>
 		</tr>
 		<tr>
-			<td>"http://127.0.0.1:8000/SistemaTreinamento/espaco"</td>
+			<td>"http://127.0.0.1:8080/SistemaTreinamento/espaco"</td>
 			<td>POST</td>
 			<td>{"nome":"(Texto)"}</td>
 			<td>Salvará um novo espaço de café e retornará seus dados salvos</td>
 		</tr>
 		<tr>
-			<td>"http://127.0.0.1:8000/SistemaTreinamento/espaco/ + (Numero Inteiro)"</td>
+			<td>"http://127.0.0.1:8080/SistemaTreinamento/espaco/ + (Numero Inteiro)"</td>
 			<td>GET</td>
 			<td>Não há</td>
 			<td>Retornará um espaço de café salvo, mostrando seu nome e uma lista contendo as pessoas que estarão presentes em cada etapa salva</td>
