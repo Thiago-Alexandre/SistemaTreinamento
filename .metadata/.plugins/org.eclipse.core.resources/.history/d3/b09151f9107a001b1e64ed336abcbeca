@@ -1,0 +1,81 @@
+package com.treinamento.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.treinamento.dto.PessoaDetalhesDTO;
+import com.treinamento.dto.PessoaParaSalvarDTO;
+import com.treinamento.dto.PessoaRespostaDTO;
+import com.treinamento.dto.PosicoesPorEtapaDTO;
+import com.treinamento.model.Etapa;
+import com.treinamento.model.Pessoa;
+import com.treinamento.model.PessoaEspaco;
+import com.treinamento.model.PessoaSala;
+import com.treinamento.repository.EtapaRepository;
+import com.treinamento.repository.PessoaEspacoRepository;
+import com.treinamento.repository.PessoaSalaRepository;
+import com.treinamento.service.PessoaService;
+
+@RequestMapping("/SistemaTreinamento")
+@RestController
+public class PessoaController {
+
+	private final PessoaService pessoaService;
+	private final EtapaRepository etapaRepository;
+	private final PessoaSalaRepository pessoaSalaRepository;
+	private final PessoaEspacoRepository pessoaEspacoRepository;
+
+	@Autowired
+    public PessoaController(PessoaService pessoaService, 
+    						EtapaRepository etapaRepository,
+    						PessoaSalaRepository pessoaSalaRepository, 
+    						PessoaEspacoRepository pessoaEspacoRepository) {
+        this.pessoaService = pessoaService;
+        this.etapaRepository = etapaRepository;
+        this.pessoaSalaRepository = pessoaSalaRepository;
+		this.pessoaEspacoRepository = pessoaEspacoRepository;
+    }
+	
+	@PostMapping(value="/pessoa")
+    public ResponseEntity<PessoaRespostaDTO> salvar(@RequestBody @Valid PessoaParaSalvarDTO dto) {
+        Pessoa pessoa = pessoaService.salvar(dto.gerarPessoa());
+        return new ResponseEntity<>(new PessoaRespostaDTO(pessoa), HttpStatus.CREATED);
+    }
+	
+	@GetMapping(value="/pessoa/{id}")
+	public ResponseEntity<PessoaDetalhesDTO> pesquisar(@PathVariable Long id) {
+		Pessoa pessoa = pessoaService.pesquisar(id);
+        if(pessoa.getId() != null) {
+        	List<PosicoesPorEtapaDTO> posicoesPorEtapa = new ArrayList<PosicoesPorEtapaDTO>();
+        	List<Etapa> etapas = etapaRepository.findAll();
+        	for(int i = 0; i < etapas.size(); i++) {
+        		PessoaSala ps = pessoaSalaRepository.findByEtapaAndPessoa(etapas.get(i), pessoa);
+        		PessoaEspaco pe = pessoaEspacoRepository.findByEtapaAndPessoa(etapas.get(i), pessoa);
+        		posicoesPorEtapa.add(new PosicoesPorEtapaDTO(etapas.get(i), ps.getSala(), pe.getEspaco()));
+        	}
+        	return new ResponseEntity<>(new PessoaDetalhesDTO(pessoa, posicoesPorEtapa), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
+	
+	@GetMapping(value="/pessoa")
+	public ResponseEntity<List<PessoaRespostaDTO>> listar() {
+		List<PessoaRespostaDTO> pessoas = pessoaService.listar();
+        if(pessoas.isEmpty()) {
+            return new ResponseEntity<>(pessoas, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(pessoas, HttpStatus.OK);
+	}
+}

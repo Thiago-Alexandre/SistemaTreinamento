@@ -1,0 +1,91 @@
+package com.treinamento.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.treinamento.dto.EspacoCafeRespostaDTO;
+import com.treinamento.dto.EspacoDetalhesDTO;
+import com.treinamento.dto.PessoasPorEtapaDTO;
+import com.treinamento.dto.SalaDetalhesDTO;
+import com.treinamento.dto.SalaRespostaDTO;
+import com.treinamento.model.EspacoCafe;
+import com.treinamento.model.Etapa;
+import com.treinamento.model.Pessoa;
+import com.treinamento.model.PessoaEspaco;
+import com.treinamento.model.PessoaSala;
+import com.treinamento.model.Sala;
+import com.treinamento.repository.EspacoCafeRepository;
+import com.treinamento.repository.EtapaRepository;
+import com.treinamento.repository.PessoaEspacoRepository;
+import com.treinamento.util.ControleLotacao;
+
+@Service
+public class EspacoService {
+
+	private final EspacoCafeRepository espacoCafeRepository;
+	private final EtapaRepository etapaRepository;
+	private final PessoaEspacoRepository pessoaEspacoRepository;
+	private final ControleLotacao controle;
+
+	@Autowired
+    public EspacoService(EspacoCafeRepository espacoCafeRepository, 
+    						EtapaRepository etapaRepository,
+    						PessoaEspacoRepository pessoaEspacoRepository, 
+    						ControleLotacao controle) {
+        this.espacoCafeRepository = espacoCafeRepository;
+        this.etapaRepository = etapaRepository;
+        this.pessoaEspacoRepository = pessoaEspacoRepository;
+        this.controle = controle;
+    }
+	
+	public EspacoCafeRespostaDTO salvar(EspacoCafe espacoCafe) {
+		EspacoCafe novoEspaco = espacoCafeRepository.save(espacoCafe);
+		controle.atualizarLotacao();
+		Integer lotacao = 0;
+        Optional<Etapa> etapa = etapaRepository.findById(0l);
+        if(etapa.isPresent()) {
+        	lotacao = pessoaEspacoRepository.findByEtapaAndEspaco(etapa.get(), novoEspaco).size();
+        }
+        return new EspacoCafeRespostaDTO(novoEspaco, lotacao);
+    }
+	
+	public EspacoDetalhesDTO pesquisar(Long id) {
+    	Optional<EspacoCafe> espacoCafe = espacoCafeRepository.findById(id);
+        if(espacoCafe.isPresent()) {
+        	List<PessoasPorEtapaDTO> pessoasPorEtapa = new ArrayList<PessoasPorEtapaDTO>();
+        	List<Etapa> etapas = etapaRepository.findAll();
+        	for(int i = 0; i < etapas.size(); i++) {
+        		List<PessoaEspaco> pessoasPorEspaco = pessoaEspacoRepository.findByEtapaAndEspaco(etapas.get(i), espacoCafe.get());
+        		List<Pessoa> pessoas = new ArrayList<Pessoa>();
+        		for(int j = 0; j < pessoasPorEspaco.size(); j++) {
+        			pessoas.add(pessoasPorEspaco.get(j).getPessoa());
+        		}
+        		pessoasPorEtapa.add(new PessoasPorEtapaDTO(etapas.get(i), pessoas));
+        	}
+        	return new EspacoDetalhesDTO(espacoCafe.get(), pessoasPorEtapa);
+        }
+        return new EspacoDetalhesDTO(null, null);
+    }
+
+    public List<EspacoCafeRespostaDTO> listar() {
+    	List<EspacoCafeRespostaDTO> lista = new ArrayList<EspacoCafeRespostaDTO>();
+    	List<EspacoCafe> espacos = espacoCafeRepository.findAll();
+    	Optional<Etapa> etapa = etapaRepository.findById(0l);
+    	Integer lotacao = 0;
+        if(etapa.isPresent()) {
+        	for(int i = 0; i < espacos.size(); i++) {
+	    		lotacao = pessoaEspacoRepository.findByEtapaAndEspaco(etapa.get(), espacos.get(i)).size();
+	    		lista.add(new EspacoCafeRespostaDTO(espacos.get(i), lotacao));
+	    	}
+        } else {
+        	for(int i = 0; i < espacos.size(); i++) {
+	    		lista.add(new EspacoCafeRespostaDTO(espacos.get(i), 0));
+	    	}
+        }
+    	return lista;
+    }
+}

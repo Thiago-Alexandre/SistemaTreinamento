@@ -1,0 +1,27 @@
+package com.treinamento.dto;
+
+import java.util.List;
+
+import com.treinamento.model.Pessoa;
+import com.treinamento.model.PessoaEspaco;
+import com.treinamento.model.PessoaSala;
+
+import lombok.Getter;
+
+@Getter
+public class PessoaRespostaDTO {
+
+	private Long id;
+	private String nome;
+	private String sobrenome;
+	private List<PessoaSala> salasPorEtapa;
+	private List<PessoaEspaco> espacosPorEtapa;
+	
+	public PessoaRespostaDTO(Pessoa pessoa) {
+		this.id = pessoa.getId();
+		this.nome = pessoa.getNome();
+		this.sobrenome = pessoa.getSobrenome();
+		
+		
+	}
+}

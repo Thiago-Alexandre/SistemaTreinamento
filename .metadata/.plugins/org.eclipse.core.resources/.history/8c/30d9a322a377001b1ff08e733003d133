@@ -1,0 +1,5 @@
+package com.treinamento.repository;
+
+public interface PessoaSalaRepository {
+
+}

@@ -1,0 +1,21 @@
+package com.treinamento.util;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.treinamento.repository.EspacoCafeRepository;
+import com.treinamento.repository.PessoaRepository;
+import com.treinamento.repository.SalaRepository;
+
+public class ControleLotacao {
+
+	private final PessoaRepository pessoaRepository;
+	private final SalaRepository salaRepository;
+	private final EspacoCafeRepository espacoRepository;
+
+	@Autowired
+    public ControleLotacao(PessoaRepository pessoaRepository, SalaRepository salaRepository, EspacoCafeRepository espacoRepository) {
+        this.pessoaRepository = pessoaRepository;
+        this.salaRepository = salaRepository;
+        this.espacoRepository = espacoRepository;
+    }
+}

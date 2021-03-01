@@ -1,0 +1,37 @@
+package com.treinamento.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.treinamento.model.EspacoCafe;
+import com.treinamento.repository.EspacoCafeRepository;
+
+@Service
+public class EspacoService {
+
+	private final EspacoCafeRepository espacoCafeRepository;
+
+	@Autowired
+    public EspacoService(EspacoCafeRepository espacoCafeRepository) {
+        this.espacoCafeRepository = espacoCafeRepository;
+    }
+	
+	public EspacoCafe salvar(EspacoCafe espacoCafe) {
+        return espacoCafeRepository.save(espacoCafe);
+    }
+	
+	public EspacoCafe pesquisar(Long id) {
+    	Optional<EspacoCafe> espacoCafe = espacoCafeRepository.findById(id);
+        if(espacoCafe.isPresent()) {
+        	return espacoCafe.get();
+        }
+        return new EspacoCafe();
+    }
+
+    public List<EspacoCafe> listar() {
+    	return espacoCafeRepository.findAll();
+    }
+}

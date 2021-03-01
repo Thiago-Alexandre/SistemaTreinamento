@@ -1,0 +1,42 @@
+package com.treinamento.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.treinamento.model.Pessoa;
+import com.treinamento.repository.PessoaRepository;
+import com.treinamento.util.ControleLotacao;
+
+@Service
+public class PessoaService {
+
+	private final PessoaRepository pessoaRepository;
+	private final ControleLotacao controle;
+
+	@Autowired
+    public PessoaService(PessoaRepository pessoaRepository, ControleLotacao controle) {
+        this.pessoaRepository = pessoaRepository;
+        this.controle = controle;
+    }
+	
+	public Pessoa salvar(Pessoa pessoa) {
+		Pessoa novaPessoa = pessoaRepository.save(pessoa);
+		controle.atualizarLotacao();
+        return novaPessoa;
+    }
+	
+	public Pessoa pesquisar(Long id) {
+    	Optional<Pessoa> pessoa = pessoaRepository.findById(id);
+        if(pessoa.isPresent()) {
+        	return pessoa.get();
+        }
+        return new Pessoa();
+    }
+
+    public List<Pessoa> listar() {
+    	return pessoaRepository.findAll();
+    }
+}

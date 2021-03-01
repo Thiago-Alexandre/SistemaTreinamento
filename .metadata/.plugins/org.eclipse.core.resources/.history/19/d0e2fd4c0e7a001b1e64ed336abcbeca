@@ -1,0 +1,86 @@
+package com.treinamento.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.treinamento.dto.PessoasPorEtapaDTO;
+import com.treinamento.dto.EspacoDetalhesDTO;
+import com.treinamento.dto.EspacoCafeParaSalvarDTO;
+import com.treinamento.dto.EspacoCafeRespostaDTO;
+import com.treinamento.model.Etapa;
+import com.treinamento.model.Pessoa;
+import com.treinamento.model.PessoaEspaco;
+import com.treinamento.model.EspacoCafe;
+import com.treinamento.repository.EtapaRepository;
+import com.treinamento.repository.PessoaEspacoRepository;
+import com.treinamento.service.EspacoService;
+
+@RequestMapping("/SistemaTreinamento")
+@RestController
+public class EspacoController {
+
+	private final EspacoService espacoService;
+	private final EtapaRepository etapaRepository;
+	private final PessoaEspacoRepository pessoaEspacoRepository;
+
+	@Autowired
+    public EspacoController(EspacoService espacoService, 
+    						EtapaRepository etapaRepository,
+    						PessoaEspacoRepository pessoaEspacoRepository) {
+        this.espacoService = espacoService;
+        this.etapaRepository = etapaRepository;
+        this.pessoaEspacoRepository = pessoaEspacoRepository;
+    }
+	
+	@PostMapping(value="/espaco")
+    public ResponseEntity<EspacoCafeRespostaDTO> salvar(@RequestBody @Valid EspacoCafeParaSalvarDTO dto) {
+        EspacoCafe espacoCafe = espacoService.salvar(dto.gerarEspaco());
+        Integer lotacao = 0;
+        Optional<Etapa> etapa = etapaRepository.findById(0l);
+        if(etapa.isPresent()) {
+        	lotacao = pessoaEspacoRepository.findByEtapaAndEspaco(etapa.get(), espacoCafe).size();
+        }
+        return new ResponseEntity<>(new EspacoCafeRespostaDTO(espacoCafe, lotacao), HttpStatus.CREATED);
+    }
+	
+	@GetMapping(value="/espaco/{id}")
+	public ResponseEntity<EspacoDetalhesDTO> pesquisar(@PathVariable Long id) {
+		EspacoCafe espacoCafe = espacoService.pesquisar(id);
+        if(espacoCafe.getId() != null) {
+        	List<PessoasPorEtapaDTO> pessoasPorEtapa = new ArrayList<PessoasPorEtapaDTO>();
+        	List<Etapa> etapas = etapaRepository.findAll();
+        	for(int i = 0; i < etapas.size(); i++) {
+        		List<PessoaEspaco> pessoasPorEspaco = pessoaEspacoRepository.findByEtapaAndEspaco(etapas.get(i), espacoCafe);
+        		List<Pessoa> pessoas = new ArrayList<Pessoa>();
+        		for(int j = 0; j < pessoasPorEspaco.size(); j++) {
+        			pessoas.add(pessoasPorEspaco.get(j).getPessoa());
+        		}
+        		pessoasPorEtapa.add(new PessoasPorEtapaDTO(etapas.get(i), pessoas));
+        	}
+        	return new ResponseEntity<>(new EspacoDetalhesDTO(espacoCafe, pessoasPorEtapa), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
+	
+	@GetMapping(value="/espaco")
+	public ResponseEntity<List<EspacoCafeRespostaDTO>> listar() {
+		List<EspacoCafeRespostaDTO> espacos = espacoService.listar();
+        if(espacos.isEmpty()) {
+            return new ResponseEntity<>(espacos, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(espacos, HttpStatus.OK);
+	}
+}

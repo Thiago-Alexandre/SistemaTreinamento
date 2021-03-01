@@ -1,0 +1,43 @@
+package com.treinamento.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.treinamento.dto.EtapaRespostaDTO;
+import com.treinamento.model.Etapa;
+import com.treinamento.repository.EtapaRepository;
+import com.treinamento.util.ControleLotacao;
+
+@Service
+public class EtapaService {
+
+	private final EtapaRepository etapaRepository;
+	private final ControleLotacao controle;
+
+	@Autowired
+    public EtapaService(EtapaRepository etapaRepository, ControleLotacao controle) {
+        this.etapaRepository = etapaRepository;
+        this.controle = controle;
+    }
+	
+	public EtapaRespostaDTO salvar(Etapa etapa) {
+		Etapa novaEtapa = etapaRepository.save(etapa);
+		controle.atualizarLotacao();
+        return new EtapaRespostaDTO(novaEtapa);
+    }
+	
+	public EtapaRespostaDTO pesquisar(Long id) {
+    	Optional<Etapa> etapa = etapaRepository.findById(id);
+        if(etapa.isPresent()) {
+        	return new EtapaRespostaDTO(etapa.get());
+        }
+        return new EtapaRespostaDTO(new Etapa(null, null));
+    }
+
+    public List<EtapaRespostaDTO> listar() {
+    	return etapaRepository.pesquisarTodos();
+    }
+}

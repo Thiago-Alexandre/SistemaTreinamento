@@ -1,0 +1,15 @@
+package com.treinamento.util;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.treinamento.repository.PessoaRepository;
+
+public class ControleLotacao {
+
+	private final PessoaRepository pessoaRepository;
+
+	@Autowired
+    public ControleLotacao(PessoaRepository pessoaRepository) {
+        this.pessoaRepository = pessoaRepository;
+    }
+}

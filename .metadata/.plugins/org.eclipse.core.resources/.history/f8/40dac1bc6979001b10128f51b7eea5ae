@@ -1,0 +1,94 @@
+package com.treinamento.util;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.treinamento.model.EspacoCafe;
+import com.treinamento.model.Etapa;
+import com.treinamento.model.Pessoa;
+import com.treinamento.model.PessoaEspaco;
+import com.treinamento.model.Sala;
+import com.treinamento.repository.EspacoCafeRepository;
+import com.treinamento.repository.EtapaRepository;
+import com.treinamento.repository.PessoaRepository;
+import com.treinamento.repository.SalaRepository;
+
+public class ControleLotacao {
+
+	private final PessoaRepository pessoaRepository;
+	private final SalaRepository salaRepository;
+	private final EspacoCafeRepository espacoRepository;
+	private final EtapaRepository etapaRepository;
+
+	@Autowired
+    public ControleLotacao(PessoaRepository pessoaRepository, SalaRepository salaRepository, EspacoCafeRepository espacoRepository, EtapaRepository etapaRepository) {
+        this.pessoaRepository = pessoaRepository;
+        this.salaRepository = salaRepository;
+        this.espacoRepository = espacoRepository;
+        this.etapaRepository = etapaRepository;
+    }
+	
+	public void atualizarLotacao() {
+		List<Pessoa> pessoas = pessoaRepository.findAll();
+		List<Sala> salas = salaRepository.findAll();
+		List<EspacoCafe> espacos = espacoRepository.findAll();
+		List<Etapa> etapas = etapaRepository.findAll();
+		
+		if(pessoas.size() > 0 && salas.size() > 0 && espacos.size() > 0 && etapas.size() > 0) {
+			
+			int indiceEtapa = 0;
+			int lotacaoMinPorEspaco = ((int) (pessoas.size() / espacos.size()));
+			int qtdPessoas = 0;
+			for(int indiceEspaco = 0; indiceEspaco < espacos.size(); indiceEspaco++) {
+				for(int indicePessoa = 0; indicePessoa < lotacaoMinPorEspaco; indicePessoa++) {
+					PessoaEspaco pe = new PessoaEspaco();
+					pe.setEtapa(etapas.get(indiceEtapa));
+					pe.setPessoa(pessoas.get(indicePessoa + qtdPessoas));
+					pe.setEspaco(espacos.get(indiceEspaco));
+					//
+				}
+				qtdPessoas += lotacaoMinPorEspaco;
+			}
+			for(int i = 0; i < pessoas.size() % espacos.size(); i++) {
+				PessoaEspaco pe = new PessoaEspaco();
+				pe.setEtapa(etapas.get(indiceEtapa));
+				pe.setPessoa(pessoas.get(i + qtdPessoas));
+				pe.setEspaco(espacos.get(i));
+				//
+			}
+			
+			
+			
+			int lotacaoMinPorSala = ((int) (pessoas.size() / salas.size()));
+			qtdPessoas = 0;
+			for(int indiceEspaco = 0; indiceEspaco < espacos.size(); indiceEspaco++) {
+				for(int indicePessoa = 0; indicePessoa < lotacaoMinPorEspaco; indicePessoa++) {
+					PessoaEspaco pe = new PessoaEspaco();
+					pe.setEtapa(etapas.get(indiceEtapa));
+					pe.setPessoa(pessoas.get(indicePessoa + qtdPessoas));
+					pe.setEspaco(espacos.get(indiceEspaco));
+					//
+				}
+				qtdPessoas += lotacaoMinPorEspaco;
+			}
+			for(int i = 0; i < pessoas.size() % espacos.size(); i++) {
+				PessoaEspaco pe = new PessoaEspaco();
+				pe.setEtapa(etapas.get(indiceEtapa));
+				pe.setPessoa(pessoas.get(i + qtdPessoas));
+				pe.setEspaco(espacos.get(i));
+				//
+			}
+				
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	}
+}

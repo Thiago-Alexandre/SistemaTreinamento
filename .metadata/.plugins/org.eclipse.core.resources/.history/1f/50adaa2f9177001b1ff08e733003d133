@@ -1,0 +1,5 @@
+package com.treinamento.dto;
+
+public class EspacoCafeRespostaDTO {
+
+}

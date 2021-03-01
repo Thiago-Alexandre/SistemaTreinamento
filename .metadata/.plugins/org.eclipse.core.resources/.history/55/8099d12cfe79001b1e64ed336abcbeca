@@ -1,0 +1,23 @@
+package com.treinamento.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.treinamento.repository.EtapaRepository;
+import com.treinamento.repository.PessoaEspacoRepository;
+import com.treinamento.repository.PessoaSalaRepository;
+import com.treinamento.service.EtapaService;
+import com.treinamento.service.PessoaService;
+
+@RequestMapping("/SistemaTreinamento")
+@RestController
+public class EtapaController {
+
+	private final EtapaService etapaService;
+
+	@Autowired
+    public EtapaController(EtapaService etapaService) {
+        this.etapaService = etapaService;
+    }
+}

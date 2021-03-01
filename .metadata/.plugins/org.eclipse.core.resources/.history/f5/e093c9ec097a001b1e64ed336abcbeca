@@ -1,0 +1,52 @@
+package com.treinamento.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.treinamento.dto.SalaRespostaDTO;
+import com.treinamento.model.Etapa;
+import com.treinamento.model.Sala;
+import com.treinamento.repository.EtapaRepository;
+import com.treinamento.repository.SalaRepository;
+import com.treinamento.util.ControleLotacao;
+
+@Service
+public class SalaService {
+
+	private final SalaRepository salaRepository;
+	private final EtapaRepository etapaRepository;
+	private final ControleLotacao controle;
+
+	@Autowired
+    public SalaService(SalaRepository salaRepository, EtapaRepository etapaRepository, ControleLotacao controle) {
+        this.salaRepository = salaRepository;
+        this.etapaRepository = etapaRepository;
+        this.controle = controle;
+    }
+	
+	public Sala salvar(Sala sala) {
+		Sala novaSala = salaRepository.save(sala);
+		controle.atualizarLotacao();
+        return novaSala;
+    }
+	
+	public Sala pesquisar(Long id) {
+    	Optional<Sala> sala = salaRepository.findById(id);
+        if(sala.isPresent()) {
+        	return sala.get();
+        }
+        return new Sala();
+    }
+
+    public List<SalaRespostaDTO> listar() {
+    	Integer lotacao = 0;
+        Optional<Etapa> etapa = etapaRepository.findById(0l);
+        if(etapa.isPresent()) {
+        	lotacao = pessoaSalaRepository.findByEtapaAndSala(etapa.get(), sala).size();
+        }
+    	return salaRepository.pesquisarTodos();
+    }
+}

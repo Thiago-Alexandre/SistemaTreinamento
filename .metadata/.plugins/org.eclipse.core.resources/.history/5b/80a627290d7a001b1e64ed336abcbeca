@@ -1,0 +1,85 @@
+package com.treinamento.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.treinamento.dto.PessoasPorEtapaDTO;
+import com.treinamento.dto.SalaDetalhesDTO;
+import com.treinamento.dto.SalaRespostaDTO;
+import com.treinamento.model.Etapa;
+import com.treinamento.model.Pessoa;
+import com.treinamento.model.PessoaSala;
+import com.treinamento.model.Sala;
+import com.treinamento.repository.EtapaRepository;
+import com.treinamento.repository.PessoaSalaRepository;
+import com.treinamento.repository.SalaRepository;
+import com.treinamento.util.ControleLotacao;
+
+@Service
+public class SalaService {
+
+	private final SalaRepository salaRepository;
+	private final EtapaRepository etapaRepository;
+	private final PessoaSalaRepository pessoaSalaRepository;
+	
+	private final ControleLotacao controle;
+
+	@Autowired
+    public SalaService(SalaRepository salaRepository, EtapaRepository etapaRepository, PessoaSalaRepository pessoaSalaRepository, ControleLotacao controle) {
+        this.salaRepository = salaRepository;
+        this.etapaRepository = etapaRepository;
+        this.pessoaSalaRepository = pessoaSalaRepository;
+        this.controle = controle;
+    }
+	
+	public SalaRespostaDTO salvar(Sala sala) {
+		Sala novaSala = salaRepository.save(sala);
+		controle.atualizarLotacao();
+		Integer lotacao = 0;
+        Optional<Etapa> etapa = etapaRepository.findById(0l);
+        if(etapa.isPresent()) {
+        	lotacao = pessoaSalaRepository.findByEtapaAndSala(etapa.get(), novaSala).size();
+        }
+        return new SalaRespostaDTO(novaSala, lotacao);
+    }
+	
+	public SalaDetalhesDTO pesquisar(Long id) {
+    	Optional<Sala> sala = salaRepository.findById(id);
+        if(sala.isPresent()) {
+        	List<PessoasPorEtapaDTO> pessoasPorEtapa = new ArrayList<PessoasPorEtapaDTO>();
+        	List<Etapa> etapas = etapaRepository.findAll();
+        	for(int i = 0; i < etapas.size(); i++) {
+        		List<PessoaSala> pessoasPorSala = pessoaSalaRepository.findByEtapaAndSala(etapas.get(i), sala.get());
+        		List<Pessoa> pessoas = new ArrayList<Pessoa>();
+        		for(int j = 0; j < pessoasPorSala.size(); j++) {
+        			pessoas.add(pessoasPorSala.get(j).getPessoa());
+        		}
+        		pessoasPorEtapa.add(new PessoasPorEtapaDTO(etapas.get(i), pessoas));
+        	}
+        	return new SalaDetalhesDTO(sala.get(), pessoasPorEtapa);
+        }
+        return new SalaDetalhesDTO(null, null);
+    }
+
+    public List<SalaRespostaDTO> listar() {
+    	List<SalaRespostaDTO> lista = new ArrayList<SalaRespostaDTO>();
+    	List<Sala> salas = salaRepository.findAll();
+    	Optional<Etapa> etapa = etapaRepository.findById(0l);
+    	Integer lotacao = 0;
+        if(etapa.isPresent()) {
+        	for(int i = 0; i < salas.size(); i++) {
+	    		lotacao = pessoaSalaRepository.findByEtapaAndSala(etapa.get(), salas.get(i)).size();
+	    		lista.add(new SalaRespostaDTO(salas.get(i), lotacao));
+	    	}
+        } else {
+        	for(int i = 0; i < salas.size(); i++) {
+	    		lista.add(new SalaRespostaDTO(salas.get(i), 0));
+	    	}
+        }
+    	return lista;
+    }
+}

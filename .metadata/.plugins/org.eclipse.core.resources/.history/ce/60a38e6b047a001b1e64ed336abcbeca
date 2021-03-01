@@ -1,0 +1,17 @@
+package com.treinamento.dto;
+
+import com.treinamento.model.EspacoCafe;
+
+import lombok.Getter;
+
+@Getter
+public class EspacoCafeRespostaDTO {
+
+	private Long id;
+	private String nome;
+	
+	public EspacoCafeRespostaDTO(EspacoCafe espaco) {
+		this.id = espaco.getId();
+		this.nome = espaco.getNome();
+	}
+}

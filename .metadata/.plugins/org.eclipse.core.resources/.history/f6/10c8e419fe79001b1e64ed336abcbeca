@@ -1,0 +1,42 @@
+package com.treinamento.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.treinamento.model.Etapa;
+import com.treinamento.repository.EtapaRepository;
+import com.treinamento.util.ControleLotacao;
+
+@Service
+public class EtapaService {
+
+	private final EtapaRepository etapaRepository;
+	private final ControleLotacao controle;
+
+	@Autowired
+    public EtapaService(EtapaRepository etapaRepository, ControleLotacao controle) {
+        this.etapaRepository = etapaRepository;
+        this.controle = controle;
+    }
+	
+	public Etapa salvar(Etapa etapa) {
+		Etapa novaEtapa = etapaRepository.save(etapa);
+		controle.atualizarLotacao();
+        return novaEtapa;
+    }
+	
+	public Etapa pesquisar(Long id) {
+    	Optional<Etapa> etapa = etapaRepository.findById(id);
+        if(etapa.isPresent()) {
+        	return etapa.get();
+        }
+        return new Etapa();
+    }
+
+    public List<Etapa> listar() {
+    	return etapaRepository.findAll();
+    }
+}

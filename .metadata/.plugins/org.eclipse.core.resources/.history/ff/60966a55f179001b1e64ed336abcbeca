@@ -1,0 +1,37 @@
+package com.treinamento.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.treinamento.model.Sala;
+import com.treinamento.repository.SalaRepository;
+
+@Service
+public class SalaService {
+
+	private final SalaRepository salaRepository;
+
+	@Autowired
+    public SalaService(SalaRepository salaRepository) {
+        this.salaRepository = salaRepository;
+    }
+	
+	public Sala salvar(Sala sala) {
+        return salaRepository.save(sala);
+    }
+	
+	public Sala pesquisar(Long id) {
+    	Optional<Sala> sala = salaRepository.findById(id);
+        if(sala.isPresent()) {
+        	return sala.get();
+        }
+        return new Sala();
+    }
+
+    public List<Sala> listar() {
+    	return salaRepository.findAll();
+    }
+}

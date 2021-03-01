@@ -1,0 +1,37 @@
+package com.treinamento.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.treinamento.model.Pessoa;
+import com.treinamento.repository.PessoaRepository;
+
+@Service
+public class PessoaService {
+
+	private final PessoaRepository pessoaRepository;
+
+	@Autowired
+    public PessoaService(PessoaRepository pessoaRepository) {
+        this.pessoaRepository = pessoaRepository;
+    }
+	
+	public Pessoa salvar(Pessoa pessoa) {
+        return pessoaRepository.save(pessoa);
+    }
+	
+	public Pessoa pesquisar(Long id) {
+    	Optional<Pessoa> pessoa = pessoaRepository.findById(id);
+        if(pessoa.isPresent()) {
+        	return pessoa.get();
+        }
+        return new Pessoa();
+    }
+
+    public List<Pessoa> listar() {
+    	return pessoaRepository.findAll();
+    }
+}
